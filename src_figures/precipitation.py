@@ -6,7 +6,7 @@
 #    By: Danilo <danilo.oceano@gmail.com>           +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/02/08 09:52:10 by Danilo            #+#    #+#              #
-#    Updated: 2023/07/14 16:35:05 by Danilo           ###   ########.fr        #
+#    Updated: 2023/07/14 17:01:09 by Danilo           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -202,10 +202,10 @@ def configure_gridlines(ax, col, row):
     gl.ylabel_style = {'size': 12, 'color': '#383838'}
     gl.right_labels = None
     gl.top_labels = None
-    gl.bottom_labels = None if row != 5 else gl.bottom_labels
+    gl.bottom_labels = None if row != 1 else gl.bottom_labels
     gl.left_labels = None if col != 0 else gl.left_labels
 
-def plot_precipitation_panels(data, experiments, figures_directory):
+def plot_precipitation_panels(data, experiments, figures_directory, zoom=False):
     """
     Plot precipitation panels for the given benchmarks.
 
@@ -219,7 +219,7 @@ def plot_precipitation_panels(data, experiments, figures_directory):
     print('\nPlotting maps...')
     plt.close('all')
 
-    ncol, nrow, imax, figsize = 2, 2, 4, (10, 10)
+    ncol, nrow, imax, figsize = 2, 2, 4, (14, 14)
     print('Figure will have ncols:', ncol, 'rows:', nrow, 'n:', imax)
 
     fig = plt.figure(figsize=figsize)
@@ -242,8 +242,14 @@ def plot_precipitation_panels(data, experiments, figures_directory):
             prec = data[experiment]
                             
             ax = fig.add_subplot(gs[row, col], projection=datacrs,frameon=True)
-            ax.set_extent([-45, -40, -25, -20], crs=datacrs) 
-            ax.text(-45,-19.8, experiment)
+
+            if zoom==False:
+                ax.set_extent([-45, -40, -25, -20], crs=datacrs) 
+                ax.text(-45,-19.8, experiment, fontdict={'size': 14})
+            else:
+                ax.set_extent([-43, -42, -23, -22], crs=datacrs) 
+                ax.text(-43,-21.95, experiment, fontdict={'size': 14})
+            
             configure_gridlines(ax, col, row)
             
             cf = ax.contourf(prec.longitude, prec.latitude, prec, extend='max',
@@ -259,7 +265,10 @@ def plot_precipitation_panels(data, experiments, figures_directory):
     fig.colorbar(cf, cax=cb_axes, orientation="vertical")
 
     os.makedirs(figures_directory, exist_ok=True)
-    fname = f"{figures_directory}/acc_prec.png"
+    if zoom==False:
+        fname = f"{figures_directory}/acc_prec.png"
+    else:
+        fname = f"{figures_directory}/acc_prec_zoom.png"
     
     fig.savefig(fname, dpi=500)
     print(fname,'saved')
@@ -296,6 +305,7 @@ def main(benchmarks_directory, figures_directory):
 
     ## Make plots
     plot_precipitation_panels(data, experiments, figures_directory)
+    plot_precipitation_panels(data, experiments, figures_directory, zoom=True)
 
 if __name__ == '__main__':
 
