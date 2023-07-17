@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    precipitation.py                                   :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: Danilo <danilo.oceano@gmail.com>           +#+  +:+       +#+         #
+#    By: Danilo  <danilo.oceano@gmail.com>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/02/08 09:52:10 by Danilo            #+#    #+#              #
-#    Updated: 2023/07/14 17:01:09 by Danilo           ###   ########.fr        #
+#    Updated: 2023/07/17 08:22:46 by Danilo           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -219,7 +219,7 @@ def plot_precipitation_panels(data, experiments, figures_directory, zoom=False):
     print('\nPlotting maps...')
     plt.close('all')
 
-    ncol, nrow, imax, figsize = 2, 2, 4, (14, 14)
+    ncol, nrow, imax, figsize = 3, 2, 5, (14, 14)
     print('Figure will have ncols:', ncol, 'rows:', nrow, 'n:', imax)
 
     fig = plt.figure(figsize=figsize)
