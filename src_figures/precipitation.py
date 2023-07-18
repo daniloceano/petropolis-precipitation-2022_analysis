@@ -6,7 +6,7 @@
 #    By: Danilo  <danilo.oceano@gmail.com>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/02/08 09:52:10 by Danilo            #+#    #+#              #
-#    Updated: 2023/07/18 10:04:37 by Danilo           ###   ########.fr        #
+#    Updated: 2023/07/18 10:07:14 by Danilo           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -30,7 +30,7 @@ from shapely.geometry import Polygon
 
 prec_levels = [0.1, 20, 40, 60, 80, 100, 120, 140, 160, 180, 200, 220]
 cmap_precipitation = colors.ListedColormap(['#D3E6F1','#2980B9', '#A9DFBF','#196F3D',
-    '#F9E79F', '#F39C12', '#f37012', '#E74C3C', '#943126', '#E6B0AA', '#7a548e'], N=len(prec_levels)-1)
+    '#F9E79F', '#F39C12', '#f37012', '#E74C3C', '#943126', '#E6B0AA', '#7a548e', 'k'], N=len(prec_levels)-1)
 
 bias_colors = ['#943126', '#E74C3C', '#f37012', '#F39C12', '#F9E79F',
                '#F8F2DB', 'white', '#D8EDF0',
