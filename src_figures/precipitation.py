@@ -6,7 +6,7 @@
 #    By: Danilo  <danilo.oceano@gmail.com>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/02/08 09:52:10 by Danilo            #+#    #+#              #
-#    Updated: 2023/07/17 08:22:46 by Danilo           ###   ########.fr        #
+#    Updated: 2023/07/18 09:02:38 by Danilo           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -205,13 +205,23 @@ def configure_gridlines(ax, col, row):
     gl.bottom_labels = None if row != 1 else gl.bottom_labels
     gl.left_labels = None if col != 0 else gl.left_labels
 
+import os
+import pandas as pd
+import xarray as xr
+import cartopy.crs as ccrs
+import matplotlib.pyplot as plt
+import matplotlib.gridspec as gridspec
+from shapely.geometry import Polygon
+
 def plot_precipitation_panels(data, experiments, figures_directory, zoom=False):
     """
     Plot precipitation panels for the given benchmarks.
 
     Parameters:
-    - benchmarks_name (str): The name of the benchmarks.
-    - bias (bool): Whether to plot bias or not. Default is False.
+    - data (dict): Dictionary of precipitation data for each experiment.
+    - experiments (list): List of experiment names.
+    - figures_directory (str): Directory to save the figures.
+    - zoom (bool): Whether to plot the zoomed-in version. Default is False.
 
     Returns:
     None
@@ -219,12 +229,23 @@ def plot_precipitation_panels(data, experiments, figures_directory, zoom=False):
     print('\nPlotting maps...')
     plt.close('all')
 
-    ncol, nrow, imax, figsize = 3, 2, 5, (14, 14)
+    ncol, nrow, imax, figsize = 3, 2, 6, (14, 14)
     print('Figure will have ncols:', ncol, 'rows:', nrow, 'n:', imax)
 
     fig = plt.figure(figsize=figsize)
     gs = gridspec.GridSpec(nrow, ncol)
     datacrs = ccrs.PlateCarree()
+
+    domain_coords = {
+        'zoom': {
+            'lon': [-43, -42],
+            'lat': [-23, -22]
+        },
+        'full': {
+            'lon': [-45, -40],
+            'lat': [-25, -20]
+        }
+    }
 
     i = 0
     for col in range(ncol):
@@ -237,41 +258,57 @@ def plot_precipitation_panels(data, experiments, figures_directory, zoom=False):
             experiment = get_exp_name(experiment)
             print(experiment)
 
-            if 'off_' in experiment: continue
+            if 'off_' in experiment:
+                continue
             
             prec = data[experiment]
                             
-            ax = fig.add_subplot(gs[row, col], projection=datacrs,frameon=True)
+            ax = fig.add_subplot(gs[row, col], projection=datacrs, frameon=True)
 
-            if zoom==False:
-                ax.set_extent([-45, -40, -25, -20], crs=datacrs) 
-                ax.text(-45,-19.8, experiment, fontdict={'size': 14})
+            if zoom == False:
+                ax.set_extent(domain_coords['full']['lon'] + domain_coords['full']['lat'], crs=datacrs)
+                ax.text(-45, -19.8, experiment, fontdict={'size': 14})
+                
+                # Plot polygon around smaller domain
+                if col == 2 and row == 1:
+                    polygon = Polygon([(-43, -23), (-43, -22), (-42, -22), (-42, -23)], closed=True, fill=False)
+                    ax.add_geometries([polygon], ccrs.PlateCarree(), facecolor='none', edgecolor='red', linewidth=1)
             else:
-                ax.set_extent([-43, -42, -23, -22], crs=datacrs) 
-                ax.text(-43,-21.95, experiment, fontdict={'size': 14})
+                ax.set_extent(domain_coords['zoom']['lon'] + domain_coords['zoom']['lat'], crs=datacrs)
+                ax.text(-43, -21.95, experiment, fontdict={'size': 14})
             
             configure_gridlines(ax, col, row)
             
-            cf = ax.contourf(prec.longitude, prec.latitude, prec, extend='max',
-                                cmap=cmap_precipitation, levels=prec_levels)
+            # Slice data for the domain being plotted
+            prec_domain = prec.sel(latitude=slice(*domain_coords['zoom']['lat']),
+                                   longitude=slice(*domain_coords['zoom']['lon'])) if zoom else prec
+            
+            max_prec = prec_domain.max().item()
+            
+            cf = ax.contourf(prec_domain.longitude, prec_domain.latitude, prec_domain, extend='max',
+                             cmap=cmap_precipitation, levels=prec_levels)
                 
-            ax.coastlines(zorder = 1)
-            i+=1
+            ax.coastlines(zorder=1)
+            
+            # Add max precipitation value to ax.text argument
+            ax.text(-44.8, -20.2, f'Max Precip: {max_prec:.2f}', fontdict={'size': 10})
+            
+            i += 1
 
     cb_axes = fig.add_axes([0.85, 0.18, 0.04, 0.6])
      
-    fig.subplots_adjust(wspace=0.1,hspace=0, right=0.8)
+    fig.subplots_adjust(wspace=0.1, hspace=0, right=0.8)
 
     fig.colorbar(cf, cax=cb_axes, orientation="vertical")
 
     os.makedirs(figures_directory, exist_ok=True)
-    if zoom==False:
+    if zoom == False:
         fname = f"{figures_directory}/acc_prec.png"
     else:
         fname = f"{figures_directory}/acc_prec_zoom.png"
     
     fig.savefig(fname, dpi=500)
-    print(fname,'saved')
+    print(fname, 'saved')
 
 
 def main(benchmarks_directory, figures_directory):
