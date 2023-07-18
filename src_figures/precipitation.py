@@ -6,7 +6,7 @@
 #    By: Danilo  <danilo.oceano@gmail.com>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/02/08 09:52:10 by Danilo            #+#    #+#              #
-#    Updated: 2023/07/18 09:56:12 by Danilo           ###   ########.fr        #
+#    Updated: 2023/07/18 09:59:42 by Danilo           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -218,7 +218,7 @@ def plot_precipitation_panels(data, experiments, figures_directory, zoom=False):
     print('\nPlotting maps...')
     plt.close('all')
 
-    ncol, nrow, imax, figsize = 3, 2, 6, (14, 14)
+    ncol, nrow, imax, figsize = 3, 2, 6, (12, 10)
     print('Figure will have ncols:', ncol, 'rows:', nrow, 'n:', imax)
 
     fig = plt.figure(figsize=figsize)
@@ -265,15 +265,16 @@ def plot_precipitation_panels(data, experiments, figures_directory, zoom=False):
 
             if zoom == False:
                 ax.set_extent(domain_coords['full']['lon'] + domain_coords['full']['lat'], crs=datacrs)
-                ax.text(-45, -19.8, experiment, fontdict={'size': 14})
+                ax.text(-45, -19.8, f'{experiment}: {max_prec:.2f}', fontdict={'size': 14})
                 
                 # Plot polygon around smaller domain
                 if col == 2 and row == 1:
                     polygon = Polygon([(-43, -23), (-43, -22), (-42, -22), (-42, -23)])
-                    ax.add_geometries([polygon], ccrs.PlateCarree(), facecolor='none', edgecolor='red', linewidth=1)
+                    ax.add_geometries([polygon], ccrs.PlateCarree(), facecolor='none',
+                                       edgecolor='red', linewidth=1, zorder=101)
             else:
                 ax.set_extent(domain_coords['zoom']['lon'] + domain_coords['zoom']['lat'], crs=datacrs)
-                ax.text(-43, -21.95, experiment, fontdict={'size': 14})
+                ax.text(-43, -21.95, f'{experiment}: {max_prec:.2f}', fontdict={'size': 14})
             
             configure_gridlines(ax, col, row)
             
@@ -282,17 +283,11 @@ def plot_precipitation_panels(data, experiments, figures_directory, zoom=False):
             cf = ax.contourf(prec_domain.longitude, prec_domain.latitude, prec_domain, extend='max',
                              cmap=cmap_precipitation, levels=prec_levels)
                 
-            ax.coastlines(zorder=1)
-            
-            # Add max precipitation value to ax.text argument
-            ax.text(-44.8, -20.2, f'Max Precip: {max_prec:.2f}', fontdict={'size': 10})
-            
+            ax.coastlines(zorder=1)            
             i += 1
 
     cb_axes = fig.add_axes([0.85, 0.18, 0.04, 0.6])
-     
     fig.subplots_adjust(wspace=0.1, hspace=0, right=0.8)
-
     fig.colorbar(cf, cax=cb_axes, orientation="vertical")
 
     os.makedirs(figures_directory, exist_ok=True)
