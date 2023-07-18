@@ -6,7 +6,7 @@
 #    By: Danilo  <danilo.oceano@gmail.com>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/02/08 09:52:10 by Danilo            #+#    #+#              #
-#    Updated: 2023/07/18 09:50:15 by Danilo           ###   ########.fr        #
+#    Updated: 2023/07/18 09:54:28 by Danilo           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -251,6 +251,17 @@ def plot_precipitation_panels(data, experiments, figures_directory, zoom=False):
                 continue
             
             prec = data[experiment]
+            prec = prec.sortby(coords='latitude', ascending=True).sortby(coords='longitude', ascending=True)
+
+            # Slice data for the domain being plotted
+            if zoom:
+                prec_domain = prec.sel(latitude=slice(*domain_coords['zoom']['lat']),
+                                   longitude=slice(*domain_coords['zoom']['lon'])) 
+            else:
+                prec_domain = prec.sel(latitude=slice(*domain_coords['full']['lat']),
+                                   longitude=slice(*domain_coords['full']['lon'])) 
+            
+            print(prec_domain)
                             
             ax = fig.add_subplot(gs[row, col], projection=datacrs, frameon=True)
 
@@ -267,10 +278,6 @@ def plot_precipitation_panels(data, experiments, figures_directory, zoom=False):
                 ax.text(-43, -21.95, experiment, fontdict={'size': 14})
             
             configure_gridlines(ax, col, row)
-            
-            # Slice data for the domain being plotted
-            prec_domain = prec.sel(latitude=slice(*domain_coords['zoom']['lat']),
-                                   longitude=slice(*domain_coords['zoom']['lon'])) if zoom else prec
             
             max_prec = float(np.amax(prec_domain.compute()))
             
@@ -298,18 +305,6 @@ def plot_precipitation_panels(data, experiments, figures_directory, zoom=False):
     
     fig.savefig(fname, dpi=500)
     print(fname, 'saved')
-
-
-    os.makedirs(figures_directory, exist_ok=True)
-    if zoom == False:
-        fname = f"{figures_directory}/acc_prec.png"
-    else:
-        fname = f"{figures_directory}/acc_prec_zoom.png"
-    
-    fig.savefig(fname, dpi=500)
-    print(fname, 'saved')
-
-
 
 def main(benchmarks_directory, figures_directory):
 
