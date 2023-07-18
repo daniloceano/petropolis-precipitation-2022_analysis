@@ -6,7 +6,7 @@
 #    By: Danilo  <danilo.oceano@gmail.com>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/02/08 09:52:10 by Danilo            #+#    #+#              #
-#    Updated: 2023/07/18 09:54:28 by Danilo           ###   ########.fr        #
+#    Updated: 2023/07/18 09:55:26 by Danilo           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -251,7 +251,7 @@ def plot_precipitation_panels(data, experiments, figures_directory, zoom=False):
                 continue
             
             prec = data[experiment]
-            prec = prec.sortby(coords='latitude', ascending=True).sortby(coords='longitude', ascending=True)
+            prec = prec.sortby('latitude', ascending=True).sortby('longitude', ascending=True)
 
             # Slice data for the domain being plotted
             if zoom:
