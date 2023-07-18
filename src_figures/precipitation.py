@@ -6,7 +6,7 @@
 #    By: Danilo  <danilo.oceano@gmail.com>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/02/08 09:52:10 by Danilo            #+#    #+#              #
-#    Updated: 2023/07/18 09:55:26 by Danilo           ###   ########.fr        #
+#    Updated: 2023/07/18 09:56:12 by Danilo           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -260,9 +260,7 @@ def plot_precipitation_panels(data, experiments, figures_directory, zoom=False):
             else:
                 prec_domain = prec.sel(latitude=slice(*domain_coords['full']['lat']),
                                    longitude=slice(*domain_coords['full']['lon'])) 
-            
-            print(prec_domain)
-                            
+                                        
             ax = fig.add_subplot(gs[row, col], projection=datacrs, frameon=True)
 
             if zoom == False:
