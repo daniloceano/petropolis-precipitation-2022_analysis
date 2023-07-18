@@ -6,7 +6,7 @@
 #    By: Danilo  <danilo.oceano@gmail.com>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/02/08 09:52:10 by Danilo            #+#    #+#              #
-#    Updated: 2023/07/18 10:08:18 by Danilo           ###   ########.fr        #
+#    Updated: 2023/07/18 10:15:17 by Danilo           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -202,7 +202,7 @@ def configure_gridlines(ax, col, row):
     gl.bottom_labels = None if row != 1 else gl.bottom_labels
     gl.left_labels = None if col != 0 else gl.left_labels
 
-def plot_precipitation_panels(data, experiments, figures_directory, zoom=False):
+def plot_precipitation_panels(data, experiments, figures_directory, grid, zoom=False):
     """
     Plot precipitation panels for the given benchmarks.
 
@@ -290,9 +290,9 @@ def plot_precipitation_panels(data, experiments, figures_directory, zoom=False):
 
     os.makedirs(figures_directory, exist_ok=True)
     if zoom == False:
-        fname = f"{figures_directory}/acc_prec.png"
+        fname = f"{figures_directory}/acc_prec_{grid}.png"
     else:
-        fname = f"{figures_directory}/acc_prec_zoom.png"
+        fname = f"{figures_directory}/acc_prec_{grid}_zoom.png"
     
     fig.savefig(fname, dpi=500)
     print(fname, 'saved')
@@ -302,7 +302,9 @@ def main(benchmarks_directory, figures_directory):
     ## Inputs ##
     experiments = glob.glob(benchmarks_directory+'/run*')
     experiments = sorted(experiments)
-    
+    grid = os.path.basename(os.path.dirname(benchmarks_directory)).split('.')[0].split('_')[1]
+    print(grid)
+
     ## Start the code ##
     parameters = get_experiment_parameters(experiments)
 
@@ -327,8 +329,8 @@ def main(benchmarks_directory, figures_directory):
         max_precipitation = max(max_precipitation, experiment_max)
 
     ## Make plots
-    plot_precipitation_panels(data, experiments, figures_directory)
-    plot_precipitation_panels(data, experiments, figures_directory, zoom=True)
+    plot_precipitation_panels(data, experiments, figures_directory, grid)
+    plot_precipitation_panels(data, experiments, figures_directory, grid, zoom=True)
 
 if __name__ == '__main__':
 
