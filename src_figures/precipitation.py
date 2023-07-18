@@ -6,7 +6,7 @@
 #    By: Danilo  <danilo.oceano@gmail.com>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/02/08 09:52:10 by Danilo            #+#    #+#              #
-#    Updated: 2023/07/18 09:30:20 by Danilo           ###   ########.fr        #
+#    Updated: 2023/07/18 09:43:21 by Danilo           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -213,13 +213,6 @@ import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
 from shapely.geometry import Polygon
 
-import os
-import pandas as pd
-import xarray as xr
-import cartopy.crs as ccrs
-import matplotlib.pyplot as plt
-import matplotlib.gridspec as gridspec
-from shapely.geometry import Polygon
 
 def plot_precipitation_panels(data, experiments, figures_directory, zoom=False):
     """
@@ -279,7 +272,7 @@ def plot_precipitation_panels(data, experiments, figures_directory, zoom=False):
                 
                 # Plot polygon around smaller domain
                 if col == 2 and row == 1:
-                    polygon = Polygon([(-43, -23), (-43, -22), (-42, -22), (-42, -23)], closed=True, fill=False)
+                    polygon = Polygon([(-43, -23), (-43, -22), (-42, -22), (-42, -23)])
                     ax.add_geometries([polygon], ccrs.PlateCarree(), facecolor='none', edgecolor='red', linewidth=1)
             else:
                 ax.set_extent(domain_coords['zoom']['lon'] + domain_coords['zoom']['lat'], crs=datacrs)
