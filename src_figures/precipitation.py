@@ -6,7 +6,7 @@
 #    By: Danilo  <danilo.oceano@gmail.com>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/02/08 09:52:10 by Danilo            #+#    #+#              #
-#    Updated: 2023/07/18 10:02:05 by Danilo           ###   ########.fr        #
+#    Updated: 2023/07/18 10:04:37 by Danilo           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -218,7 +218,7 @@ def plot_precipitation_panels(data, experiments, figures_directory, zoom=False):
     print('\nPlotting maps...')
     plt.close('all')
 
-    ncol, nrow, imax, figsize = 3, 2, 6, (12, 10)
+    ncol, nrow, imax, figsize = 3, 2, 6, (12, 8)
     print('Figure will have ncols:', ncol, 'rows:', nrow, 'n:', imax)
 
     fig = plt.figure(figsize=figsize)
@@ -268,12 +268,11 @@ def plot_precipitation_panels(data, experiments, figures_directory, zoom=False):
             if zoom == False:
                 ax.set_extent(domain_coords['full']['lon'] + domain_coords['full']['lat'], crs=datacrs)
                 ax.text(-45, -19.8, f'{experiment}: {max_prec:.2f}', fontdict={'size': 14})
-                
                 # Plot polygon around smaller domain
-                if col == 2 and row == 1:
-                    polygon = Polygon([(-43, -23), (-43, -22), (-42, -22), (-42, -23)])
-                    ax.add_geometries([polygon], ccrs.PlateCarree(), facecolor='none',
-                                       edgecolor='red', linewidth=1, zorder=101)
+                polygon = Polygon([(-43, -23), (-43, -22), (-42, -22), (-42, -23)])
+                ax.add_geometries([polygon], ccrs.PlateCarree(), facecolor='none',
+                                    edgecolor='red', linewidth=1, zorder=101)
+                
             else:
                 ax.set_extent(domain_coords['zoom']['lon'] + domain_coords['zoom']['lat'], crs=datacrs)
                 ax.text(-43, -21.95, f'{experiment}: {max_prec:.2f}', fontdict={'size': 14})
