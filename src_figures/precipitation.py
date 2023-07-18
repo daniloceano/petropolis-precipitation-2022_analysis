@@ -6,7 +6,7 @@
 #    By: Danilo  <danilo.oceano@gmail.com>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/02/08 09:52:10 by Danilo            #+#    #+#              #
-#    Updated: 2023/07/18 09:43:21 by Danilo           ###   ########.fr        #
+#    Updated: 2023/07/18 09:48:25 by Danilo           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -19,17 +19,14 @@ import argparse
 import numpy as np
 import pandas as pd
 import xarray as xr
-import cmocean.cm as cmo
 import cartopy.crs as ccrs
-
-import scipy.stats as st
-import skill_metrics as sm
 
 import matplotlib.colors as colors
 import matplotlib.gridspec as gridspec
 import matplotlib.pyplot as plt
 from matplotlib import rcParams
 import matplotlib.colors
+from shapely.geometry import Polygon
 
 prec_levels = [0.1, 20, 40, 60, 80, 100, 120, 140, 160, 180, 200, 220]
 cmap_precipitation = colors.ListedColormap(['#D3E6F1','#2980B9', '#A9DFBF','#196F3D',
@@ -205,15 +202,6 @@ def configure_gridlines(ax, col, row):
     gl.bottom_labels = None if row != 1 else gl.bottom_labels
     gl.left_labels = None if col != 0 else gl.left_labels
 
-import os
-import pandas as pd
-import xarray as xr
-import cartopy.crs as ccrs
-import matplotlib.pyplot as plt
-import matplotlib.gridspec as gridspec
-from shapely.geometry import Polygon
-
-
 def plot_precipitation_panels(data, experiments, figures_directory, zoom=False):
     """
     Plot precipitation panels for the given benchmarks.
@@ -301,6 +289,16 @@ def plot_precipitation_panels(data, experiments, figures_directory, zoom=False):
     fig.subplots_adjust(wspace=0.1, hspace=0, right=0.8)
 
     fig.colorbar(cf, cax=cb_axes, orientation="vertical")
+
+    os.makedirs(figures_directory, exist_ok=True)
+    if zoom == False:
+        fname = f"{figures_directory}/acc_prec.png"
+    else:
+        fname = f"{figures_directory}/acc_prec_zoom.png"
+    
+    fig.savefig(fname, dpi=500)
+    print(fname, 'saved')
+
 
     os.makedirs(figures_directory, exist_ok=True)
     if zoom == False:
