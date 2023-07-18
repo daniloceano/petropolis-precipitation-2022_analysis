@@ -6,7 +6,7 @@
 #    By: Danilo  <danilo.oceano@gmail.com>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/02/08 09:52:10 by Danilo            #+#    #+#              #
-#    Updated: 2023/07/18 09:02:38 by Danilo           ###   ########.fr        #
+#    Updated: 2023/07/18 09:30:20 by Danilo           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -213,6 +213,14 @@ import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
 from shapely.geometry import Polygon
 
+import os
+import pandas as pd
+import xarray as xr
+import cartopy.crs as ccrs
+import matplotlib.pyplot as plt
+import matplotlib.gridspec as gridspec
+from shapely.geometry import Polygon
+
 def plot_precipitation_panels(data, experiments, figures_directory, zoom=False):
     """
     Plot precipitation panels for the given benchmarks.
@@ -283,7 +291,7 @@ def plot_precipitation_panels(data, experiments, figures_directory, zoom=False):
             prec_domain = prec.sel(latitude=slice(*domain_coords['zoom']['lat']),
                                    longitude=slice(*domain_coords['zoom']['lon'])) if zoom else prec
             
-            max_prec = prec_domain.max().item()
+            max_prec = prec_domain.max().compute()
             
             cf = ax.contourf(prec_domain.longitude, prec_domain.latitude, prec_domain, extend='max',
                              cmap=cmap_precipitation, levels=prec_levels)
@@ -309,6 +317,7 @@ def plot_precipitation_panels(data, experiments, figures_directory, zoom=False):
     
     fig.savefig(fname, dpi=500)
     print(fname, 'saved')
+
 
 
 def main(benchmarks_directory, figures_directory):
