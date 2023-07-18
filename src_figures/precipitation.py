@@ -6,7 +6,7 @@
 #    By: Danilo  <danilo.oceano@gmail.com>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/02/08 09:52:10 by Danilo            #+#    #+#              #
-#    Updated: 2023/07/18 09:49:22 by Danilo           ###   ########.fr        #
+#    Updated: 2023/07/18 09:50:15 by Danilo           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -272,7 +272,7 @@ def plot_precipitation_panels(data, experiments, figures_directory, zoom=False):
             prec_domain = prec.sel(latitude=slice(*domain_coords['zoom']['lat']),
                                    longitude=slice(*domain_coords['zoom']['lon'])) if zoom else prec
             
-            max_prec = float(prec_domain.max())
+            max_prec = float(np.amax(prec_domain.compute()))
             
             cf = ax.contourf(prec_domain.longitude, prec_domain.latitude, prec_domain, extend='max',
                              cmap=cmap_precipitation, levels=prec_levels)
