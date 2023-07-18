@@ -6,7 +6,7 @@
 #    By: Danilo  <danilo.oceano@gmail.com>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/02/08 09:52:10 by Danilo            #+#    #+#              #
-#    Updated: 2023/07/18 09:59:42 by Danilo           ###   ########.fr        #
+#    Updated: 2023/07/18 10:00:31 by Danilo           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -252,6 +252,7 @@ def plot_precipitation_panels(data, experiments, figures_directory, zoom=False):
             
             prec = data[experiment]
             prec = prec.sortby('latitude', ascending=True).sortby('longitude', ascending=True)
+            max_prec = float(np.amax(prec_domain.compute()))
 
             # Slice data for the domain being plotted
             if zoom:
@@ -277,9 +278,7 @@ def plot_precipitation_panels(data, experiments, figures_directory, zoom=False):
                 ax.text(-43, -21.95, f'{experiment}: {max_prec:.2f}', fontdict={'size': 14})
             
             configure_gridlines(ax, col, row)
-            
-            max_prec = float(np.amax(prec_domain.compute()))
-            
+                        
             cf = ax.contourf(prec_domain.longitude, prec_domain.latitude, prec_domain, extend='max',
                              cmap=cmap_precipitation, levels=prec_levels)
                 
