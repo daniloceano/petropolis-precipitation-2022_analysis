@@ -6,7 +6,7 @@
 #    By: Danilo  <danilo.oceano@gmail.com>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/02/08 09:52:10 by Danilo            #+#    #+#              #
-#    Updated: 2023/09/17 12:37:54 by Danilo           ###   ########.fr        #
+#    Updated: 2023/09/17 12:43:09 by Danilo           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -299,8 +299,12 @@ def plot_precipitation_panels(data, experiments, figures_directory, grid, zoom=F
             configure_gridlines(ax, col, row)
             ax.coastlines(zorder=1)            
             i += 1
+    
+    if zoom:
+        cb_axes = fig.add_axes([0.85, 0.12, 0.04, 0.6])
+    else:
+        cb_axes = fig.add_axes([0.85, 0.3, 0.04, 0.5])
 
-    cb_axes = fig.add_axes([0.85, 0.18, 0.04, 0.6])
     fig.colorbar(cf, cax=cb_axes, orientation="vertical")
     fig.subplots_adjust(wspace=0.1, hspace=hspace, right=0.8)
 
