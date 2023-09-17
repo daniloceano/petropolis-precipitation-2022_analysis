@@ -6,7 +6,7 @@
 #    By: Danilo  <danilo.oceano@gmail.com>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/02/08 09:52:10 by Danilo            #+#    #+#              #
-#    Updated: 2023/09/17 12:10:03 by Danilo           ###   ########.fr        #
+#    Updated: 2023/09/17 12:16:58 by Danilo           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -218,7 +218,7 @@ def plot_precipitation_panels(data, experiments, figures_directory, grid, zoom=F
     print('\nPlotting maps...')
     plt.close('all')
 
-    ncol, nrow, imax, figsize = 3, 2, 6, (12, 8)
+    ncol, nrow, imax, figsize = 3, 2, 6, (13, 8)
     print('Figure will have ncols:', ncol, 'rows:', nrow, 'n:', imax)
 
     fig = plt.figure(figsize=figsize)
@@ -284,7 +284,7 @@ def plot_precipitation_panels(data, experiments, figures_directory, grid, zoom=F
                 
             else:
                 ax.set_extent(domain_coords['zoom']['lon'] + domain_coords['zoom']['lat'], crs=datacrs)
-                ax.text(-43.25, -21.8, f'{experiment}: {max_prec:.2f}', fontdict={'size': 14})
+                ax.text(-43.65, -21.75, f'{experiment}: {max_prec:.2f}', fontdict={'size': 14})
 
             cf = ax.contourf(prec_domain.longitude, prec_domain.latitude, prec_domain, extend='max',
                              cmap=cmap_precipitation, levels=prec_levels)
