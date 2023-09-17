@@ -6,7 +6,7 @@
 #    By: Danilo  <danilo.oceano@gmail.com>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/02/08 09:52:10 by Danilo            #+#    #+#              #
-#    Updated: 2023/09/17 12:01:36 by Danilo           ###   ########.fr        #
+#    Updated: 2023/09/17 12:10:03 by Danilo           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -269,21 +269,22 @@ def plot_precipitation_panels(data, experiments, figures_directory, grid, zoom=F
                             
             ax = fig.add_subplot(gs[row, col], projection=datacrs, frameon=True)
 
+            # Plot polygon around smaller domain
+            zoom_coords = domain_coords['polygon']
+            polygon = Polygon([(zoom_coords['lon'][0], zoom_coords['lat'][0]),
+                            (zoom_coords['lon'][0], zoom_coords['lat'][1]),
+                            (zoom_coords['lon'][1], zoom_coords['lat'][1]),
+                            (zoom_coords['lon'][1], zoom_coords['lat'][0])])
+            ax.add_geometries([polygon], ccrs.PlateCarree(), facecolor='none',
+                                edgecolor='red', linewidth=1, zorder=101)
+
             if zoom == False:
                 ax.set_extent(domain_coords['full']['lon'] + domain_coords['full']['lat'], crs=datacrs)
                 ax.text(-45, -19.8, f'{experiment}: {max_prec:.2f}', fontdict={'size': 14})
-                # Plot polygon around smaller domain
-                zoom_coords = domain_coords['polygon']
-                polygon = Polygon([(zoom_coords['lon'][0], zoom_coords['lat'][0]),
-                                (zoom_coords['lon'][0], zoom_coords['lat'][1]),
-                                (zoom_coords['lon'][1], zoom_coords['lat'][1]),
-                                (zoom_coords['lon'][1], zoom_coords['lat'][0])])
-                ax.add_geometries([polygon], ccrs.PlateCarree(), facecolor='none',
-                                    edgecolor='red', linewidth=1, zorder=101)
                 
             else:
                 ax.set_extent(domain_coords['zoom']['lon'] + domain_coords['zoom']['lat'], crs=datacrs)
-                ax.text(-43, -21.95, f'{experiment}: {max_prec:.2f}', fontdict={'size': 14})
+                ax.text(-43.25, -21.8, f'{experiment}: {max_prec:.2f}', fontdict={'size': 14})
 
             cf = ax.contourf(prec_domain.longitude, prec_domain.latitude, prec_domain, extend='max',
                              cmap=cmap_precipitation, levels=prec_levels)
