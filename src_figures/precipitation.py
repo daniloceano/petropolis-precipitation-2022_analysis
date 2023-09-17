@@ -6,7 +6,7 @@
 #    By: Danilo  <danilo.oceano@gmail.com>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/02/08 09:52:10 by Danilo            #+#    #+#              #
-#    Updated: 2023/09/17 12:16:58 by Danilo           ###   ########.fr        #
+#    Updated: 2023/09/17 12:19:18 by Danilo           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -195,7 +195,7 @@ def configure_gridlines(ax, col, row):
         alpha=0.8,
         color='#383838'
     )
-    gl.xlabel_style = {'size': 12, 'color': '#383838'}
+    gl.xlabel_style = {'size': 12, 'color': '#383838', 'rotation': 45}
     gl.ylabel_style = {'size': 12, 'color': '#383838'}
     gl.right_labels = None
     gl.top_labels = None
