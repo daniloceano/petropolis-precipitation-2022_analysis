@@ -6,7 +6,7 @@
 #    By: Danilo  <danilo.oceano@gmail.com>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/02/08 09:52:10 by Danilo            #+#    #+#              #
-#    Updated: 2023/07/18 10:15:17 by Danilo           ###   ########.fr        #
+#    Updated: 2023/09/17 11:17:50 by Danilo           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -226,13 +226,13 @@ def plot_precipitation_panels(data, experiments, figures_directory, grid, zoom=F
     datacrs = ccrs.PlateCarree()
 
     domain_coords = {
-        'zoom': {
-            'lon': [-43, -42],
-            'lat': [-23, -22]
-        },
         'full': {
             'lon': [-45, -40],
-            'lat': [-25, -20]
+            'lat': [-23.30, -20.30]
+        },
+        'zoom': {
+            'lon': [-43.2, -43],
+            'lat': [-22.4, -22.2]
         }
     }
 
@@ -269,7 +269,11 @@ def plot_precipitation_panels(data, experiments, figures_directory, grid, zoom=F
                 ax.set_extent(domain_coords['full']['lon'] + domain_coords['full']['lat'], crs=datacrs)
                 ax.text(-45, -19.8, f'{experiment}: {max_prec:.2f}', fontdict={'size': 14})
                 # Plot polygon around smaller domain
-                polygon = Polygon([(-43, -23), (-43, -22), (-42, -22), (-42, -23)])
+                zoom_coords = domain_coords['zoom']
+                polygon = Polygon([(zoom_coords['lon'][0], zoom_coords['lat'][0]),
+                                (zoom_coords['lon'][0], zoom_coords['lat'][1]),
+                                (zoom_coords['lon'][1], zoom_coords['lat'][1]),
+                                (zoom_coords['lon'][1], zoom_coords['lat'][0])])
                 ax.add_geometries([polygon], ccrs.PlateCarree(), facecolor='none',
                                     edgecolor='red', linewidth=1, zorder=101)
                 
