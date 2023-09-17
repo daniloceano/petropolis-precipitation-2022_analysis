@@ -6,7 +6,7 @@
 #    By: Danilo  <danilo.oceano@gmail.com>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/02/08 09:52:10 by Danilo            #+#    #+#              #
-#    Updated: 2023/09/17 12:28:26 by Danilo           ###   ########.fr        #
+#    Updated: 2023/09/17 12:30:34 by Danilo           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -303,9 +303,9 @@ def plot_precipitation_panels(data, experiments, figures_directory, grid, zoom=F
         fig.colorbar(cf, cax=cb_axes, orientation="vertical")
         fig.subplots_adjust(wspace=0.1, hspace=0, right=0.8)
     else:
+        plt.tight_layout()
         cb_axes = fig.add_axes([1.05, 0.18, 0.04, 0.6])
         fig.colorbar(cf, cax=cb_axes, orientation="vertical")
-        plt.tight_layout()
 
     os.makedirs(figures_directory, exist_ok=True)
     if zoom == False:
