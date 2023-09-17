@@ -6,7 +6,7 @@
 #    By: Danilo  <danilo.oceano@gmail.com>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/02/08 09:52:10 by Danilo            #+#    #+#              #
-#    Updated: 2023/09/17 12:35:50 by Danilo           ###   ########.fr        #
+#    Updated: 2023/09/17 12:37:54 by Danilo           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -224,7 +224,7 @@ def plot_precipitation_panels(data, experiments, figures_directory, grid, zoom=F
         hspace = 0
     else:
         figsize = (13, 8)
-        hspace = -0.3
+        hspace = -0.5
 
     print('Figure will have ncols:', ncol, 'rows:', nrow, 'n:', imax)
 
@@ -287,7 +287,7 @@ def plot_precipitation_panels(data, experiments, figures_directory, grid, zoom=F
 
             if zoom == False:
                 ax.set_extent(domain_coords['full']['lon'] + domain_coords['full']['lat'], crs=datacrs)
-                ax.text(-45, -19.8, f'{experiment}: {max_prec:.2f}', fontdict={'size': 14})
+                ax.text(-45, -20, f'{experiment}: {max_prec:.2f}', fontdict={'size': 14})
                 
             else:
                 ax.set_extent(domain_coords['zoom']['lon'] + domain_coords['zoom']['lat'], crs=datacrs)
