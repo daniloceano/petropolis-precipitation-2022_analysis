@@ -6,7 +6,7 @@
 #    By: Danilo  <danilo.oceano@gmail.com>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/02/08 09:52:10 by Danilo            #+#    #+#              #
-#    Updated: 2023/09/17 12:19:18 by Danilo           ###   ########.fr        #
+#    Updated: 2023/09/17 12:24:02 by Danilo           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -218,7 +218,12 @@ def plot_precipitation_panels(data, experiments, figures_directory, grid, zoom=F
     print('\nPlotting maps...')
     plt.close('all')
 
-    ncol, nrow, imax, figsize = 3, 2, 6, (13, 8)
+    ncol, nrow, imax = 3, 2, 6
+    if zoom:
+        figsize = (13, 8)
+    else:
+        figsize = (15, 8)
+
     print('Figure will have ncols:', ncol, 'rows:', nrow, 'n:', imax)
 
     fig = plt.figure(figsize=figsize)
