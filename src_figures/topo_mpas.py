@@ -114,7 +114,7 @@ minlat, maxlat = -23.30, -20.30
 fig = plt.figure(figsize=(13, 8))
 ax = plt.axes(projection=ccrs.PlateCarree())
 
-norm = TwoSlopeNorm(vmin=-10, vcenter=1, vmax=2500)
+norm = TwoSlopeNorm(vmin=-10, vcenter=0.1, vmax=2500)
 
 # Plot the topography data
 ax.set_extent([minlon, maxlon, minlat, maxlat])
@@ -123,7 +123,7 @@ im = ax.pcolormesh(topography['longitude'], topography['latitude'],
                       transform=ccrs.PlateCarree())
 
 # Add colorbar
-cbar = plt.colorbar(im, ax=ax, orientation='vertical', shrink=0.8, pad=0.05, aspect=20, extend='both')
+cbar = plt.colorbar(im, ax=ax, orientation='vertical', shrink=0.8, pad=0.07, aspect=20, extend='both')
 cbar.set_label('Elevation (m)', fontsize=12)
 
 petropolis_contour = np.array(petropolis_contour)  # Convertendo para uma matriz numpy
