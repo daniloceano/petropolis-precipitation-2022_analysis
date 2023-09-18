@@ -2,9 +2,9 @@ import xarray as xr
 import numpy as np
 
 import cartopy.crs as ccrs
-import matplotlib.colors as colors
 import matplotlib.pyplot as plt 
-from matplotlib.colors import LogNorm
+from matplotlib.colors import TwoSlopeNorm 
+import matplotlib.colors as colors
 
 def convert_longitude(lon):
     """
@@ -95,6 +95,14 @@ petropolis_contour = [
 file = '/p1-nemo/danilocs/mpas/MPAS-BRv7.2/benchmarks/Petropolis_2022/petropolis_250-4km.physics-test/run.petropolis_250-4km.physics-test.microp_mp_thompson.cu_cu_ntiedtke/latlon.nc'
 ds = xr.open_dataset(file)
 
+# make a colormap that has land and ocean clearly delineated and of the
+# same length (256 + 256)
+colors_undersea = plt.cm.terrain(np.linspace(0, 0.17, 256))
+colors_land = plt.cm.terrain(np.linspace(0.25, 1, 256))
+all_colors = np.vstack((colors_undersea, colors_land))
+terrain_map = colors.LinearSegmentedColormap.from_list('terrain_map',
+    all_colors)
+
 topography = ds.zgrid[0]
 topography['longitude'] = convert_longitude(topography['longitude'].values)
 
@@ -104,14 +112,16 @@ minlat, maxlat = -23.30, -20.30
 fig = plt.figure(figsize=(13, 8))
 ax = plt.axes(projection=ccrs.PlateCarree())
 
+norm = TwoSlopeNorm(vmin=-10, vcenter=1, vmax=2500)
+
 # Plot the topography data
-cmap = plt.get_cmap('terrain')  # You can change the colormap as desired
 ax.set_extent([minlon, maxlon, minlat, maxlat])
 im = ax.pcolormesh(topography['longitude'], topography['latitude'],
-                    topography, cmap=cmap, norm=LogNorm(vmin=1, vmax=topography.max()), transform=ccrs.PlateCarree())
+                    topography, cmap=terrain_map, rasterized=True, norm=norm,
+                      transform=ccrs.PlateCarree())
 
 # Add colorbar
-cbar = plt.colorbar(im, ax=ax, orientation='vertical', shrink=0.8, pad=0.05, aspect=20)
+cbar = plt.colorbar(im, ax=ax, orientation='vertical', shrink=0.8, pad=0.05, aspect=20, extend='both')
 cbar.set_label('Elevation (m)', fontsize=12)
 
 petropolis_contour = np.array(petropolis_contour)  # Convertendo para uma matriz numpy
