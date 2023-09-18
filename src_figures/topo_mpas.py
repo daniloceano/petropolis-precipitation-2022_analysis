@@ -2,6 +2,8 @@ import xarray as xr
 import numpy as np
 
 import cartopy.crs as ccrs
+import cartopy.feature as cfeature
+
 import matplotlib.pyplot as plt 
 from matplotlib.colors import TwoSlopeNorm 
 import matplotlib.colors as colors
@@ -128,8 +130,11 @@ petropolis_contour = np.array(petropolis_contour)  # Convertendo para uma matriz
 x_coords = petropolis_contour[:, 0]
 y_coords = petropolis_contour[:, 1]
 
-ax.plot(x_coords, y_coords, c='k', lw='1')
+# Plot Brazil state boundaries
+ax.add_feature(cfeature.BORDERS, linestyle=':', linewidth=1.5, edgecolor='k')
+ax.add_feature(cfeature.STATES, linestyle='-', linewidth=1.5, edgecolor='k')
 
+ax.plot(x_coords, y_coords, c='k', lw='1')
 
 # Configure gridlines using your function
 ax.gridlines(draw_labels=True)
