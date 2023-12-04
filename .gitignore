@@ -163,3 +163,4 @@ cython_debug/
 .DS_Store
 dados_WRF
 src_figures/.vscode/launch.json
+run.*
