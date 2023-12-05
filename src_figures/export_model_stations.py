@@ -11,7 +11,8 @@ import matplotlib.patches as mpatches
 # Constants
 FILES_STATIONS_PATH = '../dados_CEMADEN/*csv'
 MPAS_DATASET_PATH = "../dados_MPAS/run.petropolis_250-4km.physics-test.microp_mp_thompson.cu_cu_ntiedtke/latlon.nc"
-WRF_DATASET_PATH = "../dados_WRF/PET1km_Thompson-Off.nc"
+WRF_1KM_DATASET_PATH = "../dados_WRF/PET1km_Thompson-Off.nc"
+WRF_5KM_DATASET_PATH = "../dados_WRF/PET5km_Thompson-Off.nc"
 MAIN_EXTENT = [-43.3, -43, -22.6, -22.4]
 RIO_EXTENT = [-44.5, -41.5, -23.5, -21]
 
@@ -45,34 +46,47 @@ def create_dataframe():
 
 def plot_station_locations(ax, data):
     """Plot the station locations on the map."""
-    ax.scatter(data['Longitude'].unique(), data['Latitude'].unique(), s=100, color='red', alpha=0.5)
+    ax.scatter(data['Longitude'].unique(), data['Latitude'].unique(), s=100, color='k', alpha=0.5)
 
-def process_station_data(ax, data, mpas_lats, mpas_lons, wrf_lats, wrf_lons, df_mpas, df_wrf):
+def process_station_data(ax, data,
+                         mpas_lats, mpas_lons,
+                         wrf_1km_lats, wrf_1km_lons, 
+                         wrf_5km_lats, wrf_5km_lons, 
+                         df_mpas, df_wrf_1km, df_wrf_5km):
     """Process each station and update DataFrames."""
     for station_lat, station_lon in zip(data['Latitude'].unique(), data['Longitude'].unique()):
         # Convert lat/lon to float and find nearest indices
         station_lat = float(station_lat)
         station_lon = float(station_lon)
+        # Mpas
         nearest_lat_idx_mpas = find_nearest_idx(mpas_lats, station_lat)
         nearest_lon_idx_mpas = find_nearest_idx(mpas_lons, station_lon)
-        nearest_lat_idx_wrf = find_nearest_idx(wrf_lats, station_lat)
-        nearest_lon_idx_wrf = find_nearest_idx(wrf_lons, station_lon)
+        # WRF 1km
+        nearest_lat_idx_wrf_1km = find_nearest_idx(wrf_1km_lats, station_lat)
+        nearest_lon_idx_wrf_1km = find_nearest_idx(wrf_1km_lons, station_lon)
+        # WRF 5km
+        nearest_lat_idx_wrf_5km = find_nearest_idx(wrf_5km_lats, station_lat)
+        nearest_lon_idx_wrf_5km = find_nearest_idx(wrf_5km_lons, station_lon)
 
         # Plot nearest model grid point
         nearest_lat_mpas = mpas_lats[nearest_lat_idx_mpas]
         nearest_lon_mpas = mpas_lons[nearest_lon_idx_mpas]
-        nearest_lat_wrf = wrf_lats[nearest_lat_idx_wrf]
-        nearest_lon_wrf = wrf_lons[nearest_lon_idx_wrf]
+        nearest_lat_wrf_1km = wrf_1km_lats[nearest_lat_idx_wrf_1km]
+        nearest_lon_wrf_1km = wrf_1km_lons[nearest_lon_idx_wrf_1km]
+        nearest_lat_wrf_5km = wrf_5km_lats[nearest_lat_idx_wrf_5km]
+        nearest_lon_wrf_5km = wrf_5km_lons[nearest_lon_idx_wrf_5km]
 
-        ax.scatter(nearest_lon_mpas, nearest_lat_mpas, s=100, color='blue', alpha=0.5)
-        ax.scatter(nearest_lon_wrf, nearest_lat_wrf, s=100, color='green', alpha=0.5)
+        ax.scatter(nearest_lon_mpas, nearest_lat_mpas, s=100, color='red', alpha=0.5)
+        ax.scatter(nearest_lon_wrf_1km, nearest_lat_wrf_1km, s=100, color='blue', alpha=0.5)
+        ax.scatter(nearest_lon_wrf_5km, nearest_lat_wrf_5km, s=100, color='green', alpha=0.5)
 
         # Get station details
         station_name = data.iloc[0]['Station']
 
         # Add to DataFrame
         df_mpas.loc[len(df_mpas)] = [station_name, station_lat, station_lon, nearest_lat_mpas, nearest_lon_mpas]
-        df_wrf.loc[len(df_wrf)] = [station_name, station_lat, station_lon, nearest_lat_wrf, nearest_lon_wrf]
+        df_wrf_1km.loc[len(df_wrf_1km)] = [station_name, station_lat, station_lon, nearest_lat_wrf_1km, nearest_lon_wrf_1km]
+        df_wrf_5km.loc[len(df_wrf_5km)] = [station_name, station_lat, station_lon, nearest_lat_wrf_5km, nearest_lon_wrf_5km]
 
 def add_inset_map(fig, extent):
     """Add an inset map to the figure."""
@@ -110,17 +124,21 @@ def main():
     # Load datasets
     files_stations = glob(FILES_STATIONS_PATH)
     dummy_MPAS = load_dataset(MPAS_DATASET_PATH)
-    dummy_WRF = load_dataset(WRF_DATASET_PATH)
+    dummy_WRF_1KM = load_dataset(WRF_1KM_DATASET_PATH)
+    dummy_WRF_5KM = load_dataset(WRF_5KM_DATASET_PATH)
 
     # Extract model grid points
     mpas_lats = dummy_MPAS['latitude'].values
     mpas_lons = dummy_MPAS['longitude'].values
-    wrf_lats = dummy_WRF['lat'].values
-    wrf_lons = dummy_WRF['lon'].values
+    wrf_1km_lats = dummy_WRF_1KM['lat'].values
+    wrf_1km_lons = dummy_WRF_1KM['lon'].values
+    wrf_5km_lats = dummy_WRF_5KM['lat'].values
+    wrf_5km_lons = dummy_WRF_5KM['lon'].values
 
     # Initialize DataFrames
     station_mpas_df = create_dataframe()
-    station_wrf_df = create_dataframe()
+    station_wrf_1km_df = create_dataframe()
+    station_wrf_5km_df = create_dataframe()
 
     # Create main map
     fig, ax = plt.subplots(figsize=(11, 10), subplot_kw={'projection': ccrs.PlateCarree()})
@@ -139,25 +157,32 @@ def main():
         data.columns = ['City', 'ID', 'State', 'Station', 'Latitude', 'Longitude', 'Date_Time', 'Precipitation']
 
         plot_station_locations(ax, data)
-        process_station_data(ax, data, mpas_lats, mpas_lons, wrf_lats, wrf_lons, station_mpas_df, station_wrf_df)
+        process_station_data(ax, data,
+                             mpas_lats, mpas_lons,
+                             wrf_1km_lats, wrf_1km_lons, 
+                             wrf_5km_lats, wrf_5km_lons, 
+                             station_mpas_df, station_wrf_1km_df, station_wrf_5km_df)
 
     # Initialize legend handles
-    cemaden_handle = plt.Line2D([], [], color='red', marker='o', linestyle='None',
+    cemaden_handle = plt.Line2D([], [], color='k', marker='o', linestyle='None',
                                 markersize=10, label='CEMADEN', alpha=0.5)
-    mpas_handle = plt.Line2D([], [], color='blue', marker='o', linestyle='None',
+    mpas_handle = plt.Line2D([], [], color='red', marker='o', linestyle='None',
                             markersize=10, label='MPAS', alpha=0.5)
-    wrf_handle = plt.Line2D([], [], color='green', marker='o', linestyle='None',
-                            markersize=10, label='WRF', alpha=0.5)
+    wrf_1km_handle = plt.Line2D([], [], color='blue', marker='o', linestyle='None',
+                            markersize=10, label='WRF_1km', alpha=0.5)
+    wrf_5km_handle = plt.Line2D([], [], color='green', marker='o', linestyle='None',
+                            markersize=10, label='WRF_5km', alpha=0.5)
 
     # Add the custom legend handles
-    ax.legend(handles=[cemaden_handle, mpas_handle, wrf_handle], loc='upper left')
+    ax.legend(handles=[cemaden_handle, mpas_handle, wrf_1km_handle, wrf_5km_handle], loc='upper left')
 
     # Save figure
     plt.savefig('../figures/stations_map.png')
 
     # Save model grid points closest to stations
     station_mpas_df.to_csv('../dados_MPAS/stations.csv', index=False)
-    station_wrf_df.to_csv('../dados_WRF/stations.csv', index=False)
+    station_wrf_1km_df.to_csv('../dados_WRF/stations_1km.csv', index=False)
+    station_wrf_5km_df.to_csv('../dados_WRF_5km/stations_5km.csv', index=False)
 
 if __name__ == "__main__":
     main()
