@@ -182,7 +182,7 @@ def main():
     # Save model grid points closest to stations
     station_mpas_df.to_csv('../dados_MPAS/stations.csv', index=False)
     station_wrf_1km_df.to_csv('../dados_WRF/stations_1km.csv', index=False)
-    station_wrf_5km_df.to_csv('../dados_WRF_5km/stations_5km.csv', index=False)
+    station_wrf_5km_df.to_csv('../dados_WRF/stations_5km.csv', index=False)
 
 if __name__ == "__main__":
     main()
