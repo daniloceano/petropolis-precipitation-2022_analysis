@@ -93,11 +93,11 @@ for file in model_stations_files:
     elif 'WRF-5km' in file:
         wrf_5km_stations = pd.read_csv(file)
 
-# Filtering the dataframe to remove duplicates based on model latitudes and longitudes
-# Keeping the first occurrence of each
-mpas_stations = mpas_stations.drop_duplicates(subset=['Nearest Model Latitude', 'Nearest Model Longitude'], keep='first')
-wrf_1km_stations = wrf_1km_stations.drop_duplicates(subset=['Nearest Model Latitude', 'Nearest Model Longitude'], keep='first')
-wrf_5km_stations = wrf_5km_stations.drop_duplicates(subset=['Nearest Model Latitude', 'Nearest Model Longitude'], keep='first')
+# # Filtering the dataframe to remove duplicates based on model latitudes and longitudes
+# # Keeping the first occurrence of each
+# mpas_stations = mpas_stations.drop_duplicates(subset=['Nearest Model Latitude', 'Nearest Model Longitude'], keep='first')
+# wrf_1km_stations = wrf_1km_stations.drop_duplicates(subset=['Nearest Model Latitude', 'Nearest Model Longitude'], keep='first')
+# wrf_5km_stations = wrf_5km_stations.drop_duplicates(subset=['Nearest Model Latitude', 'Nearest Model Longitude'], keep='first')
 
 # Combining station names from all dataframes into a single list
 combined_station_names = mpas_stations['Station Name'].tolist() + wrf_1km_stations['Station Name'].tolist() + wrf_5km_stations['Station Name'].tolist()
