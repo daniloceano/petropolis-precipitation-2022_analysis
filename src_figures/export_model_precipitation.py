@@ -73,7 +73,7 @@ def process_wrf_precipitation(ds):
 def extract_wrf_experiment_name(wrf_dataset_path):
     # Extract experiment name from WRF dataset path
     parts = wrf_dataset_path.split('/')
-    filename = parts[-1]  
+    filename = parts[-1].split('.')[0]
     experiment_parts = filename.split('_')[1]
     microp = experiment_parts.split('-')[0].lower()  # Convert to lowercase
     cumulus = experiment_parts.split('-')[1].lower()  # Convert to lowercase
@@ -92,12 +92,6 @@ for file in model_stations_files:
         wrf_1km_stations = pd.read_csv(file)
     elif 'WRF-5km' in file:
         wrf_5km_stations = pd.read_csv(file)
-
-# # Filtering the dataframe to remove duplicates based on model latitudes and longitudes
-# # Keeping the first occurrence of each
-# mpas_stations = mpas_stations.drop_duplicates(subset=['Nearest Model Latitude', 'Nearest Model Longitude'], keep='first')
-# wrf_1km_stations = wrf_1km_stations.drop_duplicates(subset=['Nearest Model Latitude', 'Nearest Model Longitude'], keep='first')
-# wrf_5km_stations = wrf_5km_stations.drop_duplicates(subset=['Nearest Model Latitude', 'Nearest Model Longitude'], keep='first')
 
 # Combining station names from all dataframes into a single list
 combined_station_names = mpas_stations['Station Name'].tolist() + wrf_1km_stations['Station Name'].tolist() + wrf_5km_stations['Station Name'].tolist()

@@ -50,48 +50,114 @@ def load_cemaden_precipitation_data(directory):
     combined_df = pd.concat(df_list, axis=0)
     combined_df.index = pd.to_datetime(combined_df.index)
     return combined_df.resample('H').sum().dropna()  # Resample to hourly data and drop NA
-
+    
 def plot_precipitation_data_for_each_station(exported_mpas_data, exported_wrf_data, cemaden_data):
-    # Define styles for each dataset
-    mpas_style = {'linestyle': '--', 'color': 'blue'}
-    wrf_style = {'linestyle': '-.', 'color': 'green'}
-    cemaden_style = {'linestyle': '-', 'color': 'black', 'marker': 'o'}
+    # Define styles for different model options
+    model_styles = {
+        'thompson': '-',
+        'wsm6': '--',
+        'off': 'x',
+        'tiedtke': 'd',
+        'ntiedtke': '^'
+    }
 
-    # Iterate over each station
-    for station in cemaden_data.columns:
-        plt.figure(figsize=(15, 8))
-        title = f'Precipitation Data Comparison at {station}'
+    # Number of stations and subplot grid dimensions
+    n_stations = len(cemaden_data.columns)
+    n_cols = 4
+    n_rows = n_stations // n_cols + n_stations % n_cols
 
-        # Format station name to match CEMADEN data columns
+    # Create subplots
+    fig, axs = plt.subplots(n_rows, n_cols, figsize=(15, 6))
+    axs = axs.flatten()  # Flatten the array of axes
+
+    # Custom legend entries
+    legend_elements = [plt.Line2D([0], [0], color='blue', lw=2, label='MPAS'),
+                       plt.Line2D([0], [0], color='green', lw=2, label='WRF'),
+                       plt.Line2D([0], [0], color='black', marker='o', linestyle='-', label='CEMADEN')]
+
+    for i, station in enumerate(cemaden_data.columns):
+        ax = axs[i]
         formatted_station_name = station.replace(" ", "").replace("/", "").replace("-", "")
 
-        if 'Dr.' in formatted_station_name:
-            print(formatted_station_name)
+        # Plot MPAS and WRF data
+        for data_dict, color in [(exported_mpas_data, 'blue'), (exported_wrf_data, 'green')]:
+            if formatted_station_name in data_dict:
+                for column in data_dict[formatted_station_name].columns:
+                    microp = column.split('_')[-2].lower()
+                    cumulus = column.split('_')[-1].lower()  # Extract model option from column name
+                    ax.plot(data_dict[formatted_station_name].index, data_dict[formatted_station_name][column], 
+                            color=color, linestyle=model_styles[microp], marker=model_styles[cumulus])
 
-        # Plot MPAS data for the station
+        # Plot CEMADEN data
+        ax.plot(cemaden_data.index, cemaden_data[station].cumsum(), color='black', linestyle='-', marker='o')
+
+        ax.set_title(station)
+        for label in ax.get_xticklabels():
+            label.set_rotation(45)
+
+        # Only add y-axis label to the first column
+        if i % n_cols == 0:
+            ax.set_ylabel('Precipitation (mm)')
+
+    # Add custom legend outside of the last subplot
+    axs[-1].legend(handles=legend_elements, loc='upper left', bbox_to_anchor=(1, 1))
+
+    # Adjust layout
+    plt.tight_layout()
+    plt.savefig("../figures/precipitation_timeseries_comparison.png")
+
+def plot_precipitation_data_with_subplots(exported_mpas_data, exported_wrf_data, cemaden_data):
+    # Define styles for each dataset
+    mpas_style = {'linestyle': '--', 'color': 'blue', 'alpha': 0.3}
+    wrf_style = {'linestyle': '-.', 'color': 'green', 'alpha': 0.3}
+    cemaden_style = {'linestyle': '-', 'color': 'black', 'marker': 'o'}
+
+    # Define the number of rows and columns for subplots
+    n_rows = 2
+    n_cols = len(cemaden_data.columns) // 2 + len(cemaden_data.columns) % 2
+
+    # Create subplots
+    fig, axs = plt.subplots(n_rows, n_cols, figsize=(15, 6))
+    axs = axs.flatten()  # Flatten to 1D array for easy iteration
+
+    for i, station in enumerate(cemaden_data.columns):
+        ax = axs[i]
+        formatted_station_name = station.replace(" ", "").replace("/", "").replace("-", "")
+
+        # MPAS shaded area
         if formatted_station_name in exported_mpas_data:
-            for column in exported_mpas_data[formatted_station_name].columns:
-                plt.plot(exported_mpas_data[formatted_station_name].index,
-                         exported_mpas_data[formatted_station_name][column],
-                         label=f'MPAS {column}', **mpas_style)
+            mpas_max = exported_mpas_data[formatted_station_name].max(axis=1)
+            mpas_min = exported_mpas_data[formatted_station_name].min(axis=1)
+            ax.fill_between(mpas_max.index, mpas_min, mpas_max, color='blue', alpha=0.3, label='MPAS')
 
-        # Plot WRF data for the station
-        if station in exported_wrf_data:
-            for column in exported_wrf_data[formatted_station_name].columns:
-                plt.plot(exported_wrf_data[formatted_station_name].index,
-                         exported_wrf_data[formatted_station_name][column],
-                         label=f'WRF {column}', **wrf_style)
+        # WRF shaded area
+        if formatted_station_name in exported_wrf_data:
+            wrf_max = exported_wrf_data[formatted_station_name].max(axis=1)
+            wrf_min = exported_wrf_data[formatted_station_name].min(axis=1)
+            ax.fill_between(wrf_max.index, wrf_min, wrf_max, color='green', alpha=0.3, label='WRF')
 
-        # Plot CEMADEN data for the station
-        plt.plot(cemaden_data.index, cemaden_data[station].cumsum(), label='CEMADEN', **cemaden_style)
+        # CEMADEN data plot
+        ax.plot(cemaden_data.index, cemaden_data[station].cumsum(), 'k-o', label='CEMADEN', **cemaden_style)
 
-        plt.ylim(0, cemaden_data[station].cumsum().iloc[-1]+5)
+        ax.set_ylim(0, cemaden_data[station].cumsum().iloc[-1]+5)
+        ax.set_title(station)
 
-        plt.xlabel('Time')
-        plt.ylabel('Precipitation (mm)')
-        plt.title(title)
-        plt.legend()
-        plt.savefig(f"../figures/accprec_timeseries/{formatted_station_name}_precipitation_comparison.png")
+    for i, ax in enumerate(axs):
+        # Rotate x-axis ticks
+        for label in ax.get_xticklabels():
+            label.set_rotation(45)
+
+        # Only add y-axis label to the first column
+        if i % n_cols == 0:
+            ax.set_ylabel('Precipitation (mm)')
+
+        # Only add legend to the first subplot
+        if i == 0:
+            ax.legend()
+
+    # Adjust layout
+    plt.tight_layout()
+    plt.savefig(f"../figures/precipitation_timeseries_ensemble.png")
 
 # Load data
 mpas_data, wrf_data = load_exported_precipitation_data(exported_precipitation_directory)
@@ -99,3 +165,6 @@ cemaden_data = load_cemaden_precipitation_data(cemaden_directory)
 
 # Plot data for each station
 plot_precipitation_data_for_each_station(mpas_data, wrf_data, cemaden_data)
+
+plot_precipitation_data_with_subplots(mpas_data, wrf_data, cemaden_data)
+
