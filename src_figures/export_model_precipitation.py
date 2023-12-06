@@ -109,7 +109,8 @@ unique_station_names = list(set(combined_station_names))
 precipitation_data = {}
 
 # Iterate over each dataset (both MPAS and WRF)
-for dataset_path in glob(MPAS_DATASET_PATH) + glob(WRF_1KM_DATASET_PATH) + glob(WRF_5KM_DATASET_PATH):
+dataset_path_list = glob(MPAS_DATASET_PATH) + glob(WRF_1KM_DATASET_PATH) + glob(WRF_5KM_DATASET_PATH)
+for dataset_path in dataset_path_list:
     # Open the dataset
     ds = xr.open_dataset(dataset_path)
     # Change longitude from 0-360 to -180-180 for WRF datasets
@@ -124,7 +125,7 @@ for dataset_path in glob(MPAS_DATASET_PATH) + glob(WRF_1KM_DATASET_PATH) + glob(
     else:  # Assuming it's a WRF dataset
         precip = process_wrf_precipitation(ds)
         experiment_name = extract_wrf_experiment_name(dataset_path)
-        model_stations = wrf_1km_stations if 'WRF-1km' in dataset_path else wrf_5km_stations
+        model_stations = wrf_1km_stations if '1km' in dataset_path else wrf_5km_stations
 
     # Iterate over each station
     for station_name in unique_station_names:
