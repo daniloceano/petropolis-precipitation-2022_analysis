@@ -67,13 +67,17 @@ def plot_precipitation_data_for_each_station(exported_mpas_data, exported_wrf_da
 
         # Plot MPAS data for the station
         if formatted_station_name in exported_mpas_data:
-            for column in exported_mpas_data[station].columns:
-                plt.plot(exported_mpas_data[station].index, exported_mpas_data[station][column], label=f'MPAS {column}', **mpas_style)
+            for column in exported_mpas_data[formatted_station_name].columns:
+                plt.plot(exported_mpas_data[formatted_station_name].index,
+                         exported_mpas_data[formatted_station_name][column],
+                         label=f'MPAS {column}', **mpas_style)
 
         # Plot WRF data for the station
         if station in exported_wrf_data:
-            for column in exported_wrf_data[station].columns:
-                plt.plot(exported_wrf_data[station].index, exported_wrf_data[station][column], label=f'WRF {column}', **wrf_style)
+            for column in exported_wrf_data[formatted_station_name].columns:
+                plt.plot(exported_wrf_data[formatted_station_name].index,
+                         exported_wrf_data[formatted_station_name][column],
+                         label=f'WRF {column}', **wrf_style)
 
         # Plot CEMADEN data for the station
         if (formatted_station_name in exported_mpas_data) or (station in exported_wrf_data):
@@ -86,7 +90,7 @@ def plot_precipitation_data_for_each_station(exported_mpas_data, exported_wrf_da
         plt.ylabel('Precipitation (mm)')
         plt.title(title)
         plt.legend()
-        plt.show()
+        #plt.savefig()
 
 # Load data
 mpas_data, wrf_data = load_exported_precipitation_data(exported_precipitation_directory)

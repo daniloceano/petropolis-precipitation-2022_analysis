@@ -78,7 +78,7 @@ def extract_wrf_experiment_name(wrf_dataset_path):
     microp = experiment_parts.split('-')[0].lower()  # Convert to lowercase
     cumulus = experiment_parts.split('-')[1].lower()  # Convert to lowercase
     grid_spacing = '5km' if '5km' in filename else '1km'
-    experiment_name = 'WRF_' + grid_spacing + '_'.join([microp, cumulus])
+    experiment_name = 'WRF' + grid_spacing + '_' + '_'.join([microp, cumulus])
     return experiment_name
 
 # Use glob to find all files that match the pattern
@@ -173,7 +173,7 @@ for station_name, experiments in precipitation_data.items():
             df_station = pd.DataFrame(time_series.values, index=time, columns=[experiment_name])
         else:
             # For non-MPAS data, use the Time attribute from the dataset as the index
-            df_station = pd.DataFrame(time_series, index=time_series.time)
+            df_station = pd.DataFrame(time_series, index=time_series.time, columns=[experiment_name])
 
         # Construct the file path for the CSV
         station_name = station_name.replace(" ", "").replace("/", "").replace("-", "")
