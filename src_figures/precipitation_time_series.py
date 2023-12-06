@@ -65,6 +65,9 @@ def plot_precipitation_data_for_each_station(exported_mpas_data, exported_wrf_da
         # Format station name to match CEMADEN data columns
         formatted_station_name = station.replace(" ", "").replace("/", "").replace("-", "")
 
+        if 'Dr.' in formatted_station_name:
+            print(formatted_station_name)
+
         # Plot MPAS data for the station
         if formatted_station_name in exported_mpas_data:
             for column in exported_mpas_data[formatted_station_name].columns:
@@ -80,17 +83,15 @@ def plot_precipitation_data_for_each_station(exported_mpas_data, exported_wrf_da
                          label=f'WRF {column}', **wrf_style)
 
         # Plot CEMADEN data for the station
-        if (formatted_station_name in exported_mpas_data) or (station in exported_wrf_data):
-            plt.plot(cemaden_data.index, cemaden_data[station].cumsum(), label='CEMADEN', **cemaden_style)
+        plt.plot(cemaden_data.index, cemaden_data[station].cumsum(), label='CEMADEN', **cemaden_style)
 
-        plt.xlim(cemaden_data.index[0], cemaden_data.index[-1])
         plt.ylim(0, cemaden_data[station].cumsum().iloc[-1]+5)
 
         plt.xlabel('Time')
         plt.ylabel('Precipitation (mm)')
         plt.title(title)
         plt.legend()
-        #plt.savefig()
+        plt.savefig(f"../figures/accprec_timeseries/{formatted_station_name}_precipitation_comparison.png")
 
 # Load data
 mpas_data, wrf_data = load_exported_precipitation_data(exported_precipitation_directory)
