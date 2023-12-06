@@ -58,12 +58,15 @@ def plot_precipitation_data_for_each_station(exported_mpas_data, exported_wrf_da
     cemaden_style = {'linestyle': '-', 'color': 'black', 'marker': 'o'}
 
     # Iterate over each station
-    for station in exported_mpas_data.keys():
+    for station in cemaden_data.columns:
         plt.figure(figsize=(15, 8))
         title = f'Precipitation Data Comparison at {station}'
 
+        # Format station name to match CEMADEN data columns
+        formatted_station_name = station.replace(" ", "").replace("/", "").replace("-", "")
+
         # Plot MPAS data for the station
-        if station in exported_mpas_data:
+        if formatted_station_name in exported_mpas_data:
             for column in exported_mpas_data[station].columns:
                 plt.plot(exported_mpas_data[station].index, exported_mpas_data[station][column], label=f'MPAS {column}', **mpas_style)
 
@@ -73,8 +76,11 @@ def plot_precipitation_data_for_each_station(exported_mpas_data, exported_wrf_da
                 plt.plot(exported_wrf_data[station].index, exported_wrf_data[station][column], label=f'WRF {column}', **wrf_style)
 
         # Plot CEMADEN data for the station
-        if station in cemaden_data.columns:
-            plt.plot(cemaden_data.index, cemaden_data[station], label='CEMADEN', **cemaden_style)
+        if (formatted_station_name in exported_mpas_data) or (station in exported_wrf_data):
+            plt.plot(cemaden_data.index, cemaden_data[station].cumsum(), label='CEMADEN', **cemaden_style)
+
+        plt.xlim(cemaden_data.index[0], cemaden_data.index[-1])
+        plt.ylim(0, cemaden_data[station].cumsum().iloc[-1]+5)
 
         plt.xlabel('Time')
         plt.ylabel('Precipitation (mm)')
