@@ -77,7 +77,8 @@ def extract_wrf_experiment_name(wrf_dataset_path):
     experiment_parts = filename.split('_')[1]
     microp = experiment_parts.split('-')[0].lower()  # Convert to lowercase
     cumulus = experiment_parts.split('-')[1].lower()  # Convert to lowercase
-    experiment_name = 'WRF_' + '_'.join([microp, cumulus])
+    grid_spacing = '5km' if '5km' in filename else '1km'
+    experiment_name = 'WRF_' + grid_spacing + '_'.join([microp, cumulus])
     return experiment_name
 
 # Use glob to find all files that match the pattern
